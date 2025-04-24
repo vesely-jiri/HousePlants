@@ -80,14 +80,12 @@ public class Plant implements Comparable<Plant> {
         return "Plant " + name + " was last watered " + wateringInterval + ". Recommended interval is " + wateringInterval + ".";
     }
 
-    public static Plant serialize(String string) throws PlantException {
-        //TODO: Finalize this method
-        //String name, Duration wateringInterval, String notes, LocalDateTime plantedDate, LocalDateTime lastWateringDate
+    public static Plant serialize(String string) {
         String[] args = string.split("\t");
         if (args.length != 4) {
             DebugManager.printError("Illegal arguments for Plant constructor: " + string);
         }
-        return new Plant(args[0], Duration.ofDays(Integer.parseInt(args[1])), args[2], LocalDateTime.parse(args[3]), LocalDateTime.parse(args[4]));
+        return new Plant();
     }
 
     @Override
