@@ -25,6 +25,6 @@ public class DebugManager {
     }
 
     public static void printError(String message) {
-        System.err.println(ConsoleColor.RED + getFormattedTime() + message + ConsoleColor.RESET);
+        System.out.println(ConsoleColor.RED + getFormattedTime() + message + ConsoleColor.RESET);
     }
 }

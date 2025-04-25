@@ -1,12 +1,12 @@
 package cz.jpcz.houseplants.model;
 
 import cz.jpcz.houseplants.exceptions.PlantException;
+import cz.jpcz.houseplants.util.ConsoleColor;
 import cz.jpcz.houseplants.util.DebugManager;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.time.LocalDateTime;
+import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,17 +17,17 @@ public class PlantCollection {
 
     public PlantCollection() {}
 
-    //Sukulent v koupelně	Nezalévá se	365	2011-03-01	2011-03-01
     public PlantCollection(String fileName) {
         try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(fileName)))) {
             while (scanner.hasNextLine()) {
-                //TODO: check if the line is valid
                 plants.add(Plant.serialize(scanner.nextLine()));
             }
-        } catch (FileNotFoundException e) {
-            DebugManager.printError("File " + fileName + " was not found");
-        } catch (PlantException e) {
-            DebugManager.printError("Exception thrown: " + e.getMessage());
+        } catch (FileNotFoundException | PlantException e) {
+            if (DebugManager.isDebug()) {
+                DebugManager.printError("Exception thrown: " + e.getMessage());
+            } else {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -35,8 +35,18 @@ public class PlantCollection {
         plants.add(plant);
     }
 
-    public void savePlantsToFile() {
-
+    public void savePlantsToFile(String path) {
+        if (!new File(path).exists()) {
+            DebugManager.print(ConsoleColor.BLUE + "File " + path + " does not exist. Creating new file.");
+        }
+        try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path)))) {
+            for (Plant plant : this.plants) {
+                writer.println(plant.deserialize());
+            }
+            DebugManager.print(ConsoleColor.BLUE + "Plants(" + plants.size() + ") saved to file " + path);
+        } catch (IOException e) {
+            DebugManager.printError("Exception thrown: " + e.getMessage());
+        }
     }
 
     public Plant getPlant(int index) {
@@ -54,7 +64,7 @@ public class PlantCollection {
     public List<Plant> getUnWateredPlants() {
         List<Plant> unWateredPlants = new ArrayList<>();
         for (Plant plant : plants) {
-            if (plant.getLastWateringDate().plus(plant.getWateringInterval()).isBefore(LocalDateTime.now())) {
+            if (plant.getLastWateringDate().plus(plant.getWateringInterval()).isBefore(LocalDate.now())) {
                 unWateredPlants.add(plant);
             }
         }

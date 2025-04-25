@@ -5,27 +5,26 @@ import cz.jpcz.houseplants.util.ConsoleColor;
 import cz.jpcz.houseplants.util.DebugManager;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Plant implements Comparable<Plant> {
+
+    private static final char DELIMITER = '\t';
 
     private String name;
     private Duration wateringInterval;
     private String notes;
-    private LocalDateTime plantedDate;
-    private LocalDateTime lastWateringDate;
+    private LocalDate plantedDate;
+    private LocalDate lastWateringDate;
 
-    public Plant(String name, Duration wateringInterval, String notes, LocalDateTime plantedDate, LocalDateTime lastWateringDate) throws PlantException {
-        DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
-                wateringInterval.toDays() + ", " + notes + ", " + plantedDate + ", " + lastWateringDate);
-
+    public Plant(String name, Duration wateringInterval, String notes, LocalDate plantedDate, LocalDate lastWateringDate) throws PlantException {
         if (wateringInterval.isNegative() || wateringInterval.isZero()) {
             throw new PlantException("Watering interval cannot be negative or zero.");
         }
-
+        DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
+                wateringInterval.toDays() + ", " + notes + ", " + plantedDate + ", " + lastWateringDate);
         this.name = name;
         this.wateringInterval = wateringInterval;
         this.notes = notes;
@@ -34,7 +33,17 @@ public class Plant implements Comparable<Plant> {
     }
 
     public Plant(String name, Duration wateringInterval) throws PlantException {
-        this(name, wateringInterval, "", LocalDateTime.now(), LocalDateTime.now());
+        //Because of rule: this() must be first statement in constructor, object creation can't be delegated to main constructor
+        if (wateringInterval.isNegative() || wateringInterval.isZero()) {
+            throw new PlantException("Watering interval cannot be negative or zero.");
+        }
+        DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
+                wateringInterval.toDays() + ", " + notes + ", " + LocalDate.now() + ", " + LocalDate.now());
+        this.name = name;
+        this.wateringInterval = wateringInterval;
+        this.notes = "";
+        this.plantedDate = LocalDate.now();
+        this.lastWateringDate = LocalDate.now();
     }
 
     public Plant(String name) throws PlantException {
@@ -42,7 +51,7 @@ public class Plant implements Comparable<Plant> {
     }
 
     public void doWateringNow() {
-        this.lastWateringDate = LocalDateTime.now();
+        this.lastWateringDate = LocalDate.now();
     }
 
     public String getName() {
@@ -63,16 +72,16 @@ public class Plant implements Comparable<Plant> {
     public void setNotes(String notes) {
         this.notes = notes;
     }
-    public LocalDateTime getPlantedDate() {
+    public LocalDate getPlantedDate() {
         return plantedDate;
     }
-    public void setPlantedDate(LocalDateTime plantedDate) {
+    public void setPlantedDate(LocalDate plantedDate) {
         this.plantedDate = plantedDate;
     }
-    public LocalDateTime getLastWateringDate() {
+    public LocalDate getLastWateringDate() {
         return lastWateringDate;
     }
-    public void setLastWateringDate(LocalDateTime lastWateringDate) {
+    public void setLastWateringDate(LocalDate lastWateringDate) {
         this.lastWateringDate = lastWateringDate;
     }
 
@@ -81,14 +90,29 @@ public class Plant implements Comparable<Plant> {
     }
 
     public static Plant serialize(String string) throws PlantException {
-        //TODO: Finalize this method
-        //String name, Duration wateringInterval, String notes, LocalDateTime plantedDate, LocalDateTime lastWateringDate
-        String[] args = string.split("\t");
-        if (args.length != 4) {
-            DebugManager.printError("Illegal arguments for Plant constructor: " + string);
+        String[] args = string.split(String.valueOf(DELIMITER));
+        if (args.length != 5) {
+            DebugManager.printError("Illegal number of arguments for Plant constructor(" + args.length + "): " + string);
         }
-        return new Plant(args[0], Duration.ofDays(Integer.parseInt(args[1])), args[2], LocalDateTime.parse(args[3]), LocalDateTime.parse(args[4]));
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            Duration wateringInterval = Duration.ofDays(Integer.parseInt(args[2]));
+            LocalDate plantedDate = LocalDate.parse(args[3], formatter);
+            LocalDate lastWateringDate = LocalDate.parse(args[4], formatter);
+            return new Plant(args[0], wateringInterval, args[1], plantedDate, lastWateringDate);
+        } catch (ArrayIndexOutOfBoundsException | DateTimeParseException | NumberFormatException e) {
+            if (DebugManager.isDebug()) {
+                DebugManager.printError("Exception thrown: " + e.getMessage());
+            } else {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
+
+public String deserialize() {
+    return name + DELIMITER + notes + wateringInterval.toDays() + DELIMITER + plantedDate + DELIMITER + lastWateringDate;
+}
 
     @Override
     public String toString() {
