@@ -13,7 +13,7 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 public class PlantCollection {
-    private List<Plant> plants = new ArrayList<>();
+    public List<Plant> plants = new ArrayList<>();
 
     public PlantCollection() {}
 
@@ -92,7 +92,7 @@ public class PlantCollection {
         return result;
     }
 
-    public void sortPlantsByWateringInterval() {
-        plants.sort(Comparator.comparing(Plant::getWateringInterval));
+    public void sortPlantsByLastWateringDate() {
+        plants.sort(Comparator.comparing(Plant::getLastWateringDate));
     }
 }

@@ -9,6 +9,9 @@ import cz.jpcz.houseplants.util.ConsoleColor;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public final class DataTest {
 
@@ -23,6 +26,8 @@ public final class DataTest {
         testPlantCreation();
         testInvalidWateringInterval();
         testSavingAndLoading();
+        testSortPlantsByName();
+        testSortPlantsByLastWateringDate();
         testErrorLoadingWrongFileFormat();
         testGetUnWateredPlants();
 
@@ -95,6 +100,40 @@ public final class DataTest {
 
         plantCollection.getUnWateredPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.getWateringInfo()));
+    }
+
+    public static void testSortPlantsByName() {
+        DebugManager.printHeader("Testing sortPlantsByName method");
+
+        PlantCollection plantCollection = new PlantCollection("test-plants.txt");
+
+        DebugManager.print(ConsoleColor.BLUE + "Plants before sorting:");
+        plantCollection.getPlants().forEach(plant ->
+                DebugManager.print(ConsoleColor.GREEN + plant.getName()));
+
+        List<Plant> plants = plantCollection.getPlants();
+        Collections.sort(plants);
+
+        DebugManager.print(ConsoleColor.BLUE + "Plants after sorting:");
+        plants.forEach(plant ->
+                DebugManager.print(ConsoleColor.GREEN + plant.getName()));
+    }
+
+
+    public static void testSortPlantsByLastWateringDate() {
+        DebugManager.printHeader("Testing sortPlantsByLastWateringDate method");
+
+        PlantCollection plantCollection = new PlantCollection("test-plants.txt");
+
+        plantCollection.getPlants().forEach(plant ->
+                DebugManager.print("[BEFORE SORT] " + ConsoleColor.GREEN +
+                        plant.getLastWateringDate() + " - " + plant));
+
+        plantCollection.sortPlantsByLastWateringDate();
+
+        plantCollection.getPlants().forEach(plant ->
+                DebugManager.print("[AFTER SORT] " + ConsoleColor.GREEN +
+                        plant.getLastWateringDate() + " - " + plant));
     }
 
     private static void cleanupGeneratedFiles() {
