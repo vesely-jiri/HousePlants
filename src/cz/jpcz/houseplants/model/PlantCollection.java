@@ -15,8 +15,6 @@ import java.util.function.Predicate;
 public class PlantCollection {
     public List<Plant> plants = new ArrayList<>();
 
-    public PlantCollection() {}
-
     public PlantCollection(List<Plant> plants) {
         this.plants.addAll(plants);
     }
@@ -43,7 +41,7 @@ public class PlantCollection {
         this.plants.add(plant);
     }
 
-    public void savePlantsToFile(String path) {
+    public void saveCollectionToFile(String path) {
         if (!new File(path).exists()) {
             DebugManager.print(ConsoleColor.BLUE + "File " + path + " does not exist. Creating new file.");
         }

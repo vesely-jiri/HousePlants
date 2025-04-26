@@ -82,7 +82,7 @@ public final class DataTest {
             Plant plant1 = new Plant("TestPlant", Duration.ofDays(2));
             plantCollection.addPlant(plant1);
 
-            plantCollection.savePlantsToFile("resources/test-plants2.txt");
+            plantCollection.saveCollectionToFile("resources/test-plants2.txt");
             DebugManager.print(ConsoleColor.BLUE + "Plants saved successfully to test-plants2.txt");
 
             PlantCollection loadedCollection = new PlantCollection("resources/test-plants2.txt");
@@ -172,7 +172,7 @@ public final class DataTest {
         DebugManager.print(ConsoleColor.GREEN + "Removed 3rd plant from collection. Collection size: " + plantCollection.getPlants().size());
 
         DebugManager.print(ConsoleColor.PURPLE + "Saving plants to new file new-plants.txt");
-        plantCollection.savePlantsToFile("resources/new-plants.txt");
+        plantCollection.saveCollectionToFile("resources/new-plants.txt");
 
         DebugManager.print(ConsoleColor.PURPLE + "Loading plants from new file new-plants.txt");
         PlantCollection newCollection = new PlantCollection("resources/new-plants.txt");
