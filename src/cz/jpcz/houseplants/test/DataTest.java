@@ -10,13 +10,15 @@ import java.io.File;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public final class DataTest {
 
     private DataTest() {}
 
+    /**
+     * If true, generated test files will be deleted at the end of the testg
+     */
     private static final boolean fileCleanup = true;
 
     public static void run() {
@@ -64,7 +66,7 @@ public final class DataTest {
     private static void testSavingAndLoading() {
         DebugManager.printHeader("Testing saving and loading plants");
 
-        PlantCollection plantCollection = new PlantCollection("test-plants.txt");
+        PlantCollection plantCollection = new PlantCollection("kvetiny.txt");
         try {
             Plant plant1 = new Plant("TestPlant", Duration.ofDays(2));
             plantCollection.addPlant(plant1);
@@ -96,7 +98,7 @@ public final class DataTest {
     private static void testGetUnWateredPlants() {
         DebugManager.printHeader("Testing getUnWateredPlants method");
 
-        PlantCollection plantCollection = new PlantCollection("test-plants.txt");
+        PlantCollection plantCollection = new PlantCollection("kvetiny.txt");
 
         plantCollection.getUnWateredPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.getWateringInfo()));
@@ -105,7 +107,7 @@ public final class DataTest {
     public static void testSortPlantsByName() {
         DebugManager.printHeader("Testing sortPlantsByName method");
 
-        PlantCollection plantCollection = new PlantCollection("test-plants.txt");
+        PlantCollection plantCollection = new PlantCollection("kvetiny.txt");
 
         DebugManager.print(ConsoleColor.BLUE + "Plants before sorting:");
         plantCollection.getPlants().forEach(plant ->
@@ -123,7 +125,7 @@ public final class DataTest {
     public static void testSortPlantsByLastWateringDate() {
         DebugManager.printHeader("Testing sortPlantsByLastWateringDate method");
 
-        PlantCollection plantCollection = new PlantCollection("test-plants.txt");
+        PlantCollection plantCollection = new PlantCollection("kvetiny.txt");
 
         plantCollection.getPlants().forEach(plant ->
                 DebugManager.print("[BEFORE SORT] " + ConsoleColor.GREEN +
