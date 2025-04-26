@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException;
 
 public class Plant implements Comparable<Plant> {
 
-    private static final char DELIMITER = '\t';
+    private static final String DELIMITER = "\t";
 
     private String name;
     private Duration wateringInterval;
@@ -19,9 +19,20 @@ public class Plant implements Comparable<Plant> {
     private LocalDate plantedDate;
     private LocalDate lastWateringDate;
 
+    /**
+     * Main constructor for creating new plant
+     * @param name Name of plant
+     * @param wateringInterval Watering interval
+     * @param notes Notes
+     * @param plantedDate Plant's planted date
+     * @param lastWateringDate Plant's last watering date
+     */
     public Plant(String name, Duration wateringInterval, String notes, LocalDate plantedDate, LocalDate lastWateringDate) throws PlantException {
         if (wateringInterval.isNegative() || wateringInterval.isZero()) {
             throw new PlantException("Watering interval cannot be negative or zero.");
+        }
+        if (plantedDate.isAfter(lastWateringDate)) {
+            throw new PlantException("Planted date cannot be after last watering date.");
         }
         DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
                 wateringInterval.toDays() + ", " + notes + ", " + plantedDate + ", " + lastWateringDate);
@@ -37,13 +48,13 @@ public class Plant implements Comparable<Plant> {
         if (wateringInterval.isNegative() || wateringInterval.isZero()) {
             throw new PlantException("Watering interval cannot be negative or zero.");
         }
-        DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
-                wateringInterval.toDays() + ", " + notes + ", " + LocalDate.now() + ", " + LocalDate.now());
         this.name = name;
         this.wateringInterval = wateringInterval;
         this.notes = "";
         this.plantedDate = LocalDate.now();
         this.lastWateringDate = LocalDate.now();
+        DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
+                wateringInterval.toDays() + ", " + notes + ", " + LocalDate.now() + ", " + LocalDate.now());
     }
 
     public Plant(String name) throws PlantException {
@@ -86,42 +97,49 @@ public class Plant implements Comparable<Plant> {
     }
 
     public String getWateringInfo() {
-        return "Plant " + name + " was last watered " + wateringInterval + ". Recommended interval is " + wateringInterval + ".";
+        long daysSinceLastWatering = LocalDate.now().toEpochDay() - (lastWateringDate.toEpochDay());
+        if (lastWateringDate.plusDays(wateringInterval.toDays()).isBefore(LocalDate.now())) {
+            return "The plant was last watered on " + lastWateringDate + "(" + daysSinceLastWatering + " days ago)" + ". Watering interval should be " +
+                    wateringInterval.toDays() + " days. Consider watering now";
+        }
+        return "The plant was last watered on " + lastWateringDate + ".";
     }
 
-    public static Plant serialize(String string) throws PlantException {
-        String[] args = string.split(String.valueOf(DELIMITER));
+    public static Plant deserialize(String string) throws PlantException {
+        String[] args = string.split(DELIMITER);
         if (args.length != 5) {
-            DebugManager.printError("Illegal number of arguments for Plant constructor(" + args.length + "): " + string);
+            throw new PlantException("Illegal number of arguments for Plant constructor(" + args.length + "): " + string);
         }
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             Duration wateringInterval = Duration.ofDays(Integer.parseInt(args[2]));
-            LocalDate plantedDate = LocalDate.parse(args[3], formatter);
-            LocalDate lastWateringDate = LocalDate.parse(args[4], formatter);
+            LocalDate plantedDate = LocalDate.parse(args[4], formatter);
+            LocalDate lastWateringDate = LocalDate.parse(args[3], formatter);
             return new Plant(args[0], wateringInterval, args[1], plantedDate, lastWateringDate);
-        } catch (ArrayIndexOutOfBoundsException | DateTimeParseException | NumberFormatException e) {
-            if (DebugManager.isDebug()) {
-                DebugManager.printError("Exception thrown: " + e.getMessage());
-            } else {
-                e.printStackTrace();
-            }
+        } catch (NumberFormatException e) {
+            throw new PlantException("Failed to parse watering interval: " + string);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new PlantException("Illegal number of arguments for Plant constructor(" + args.length + "): " + string);
+        } catch (DateTimeParseException e) {
+            throw new PlantException("Failed to parse date: " + string + e);
+        } catch (PlantException e) {
+            throw new PlantException("Failed to create Plant: " + string + e);
         }
-        return null;
     }
 
-public String deserialize() {
-    return name + DELIMITER + notes + wateringInterval.toDays() + DELIMITER + plantedDate + DELIMITER + lastWateringDate;
+public String serialize() {
+    return name + DELIMITER + notes + DELIMITER + wateringInterval.toDays() + DELIMITER + lastWateringDate + DELIMITER + plantedDate;
 }
 
     @Override
     public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         return "Plant{" +
                 "name='" + name + '\'' +
-                ", wateringInterval=" + wateringInterval +
+                ", wateringInterval=" + wateringInterval.toDays() +
                 ", notes='" + notes + '\'' +
-                ", plantedDate=" + plantedDate +
-                ", lastWateringDate=" + lastWateringDate +
+                ", plantedDate=" + plantedDate.format(formatter) +
+                ", lastWateringDate=" + lastWateringDate.format(formatter) +
                 '}';
     }
 

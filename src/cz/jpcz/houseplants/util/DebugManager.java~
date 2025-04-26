@@ -16,7 +16,7 @@ public class DebugManager {
 
     public static void printHeader(String message) {
         if (DEBUG) {
-            System.out.println("\n" + ConsoleColor.YELLOW + getFormattedTime() + message + ConsoleColor.RESET);
+            System.out.println("\n" + ConsoleColor.YELLOW + message + ConsoleColor.RESET);
         }
     }
 

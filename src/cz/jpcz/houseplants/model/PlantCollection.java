@@ -10,16 +10,25 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 public class PlantCollection {
-    List<Plant> plants = new ArrayList<>();
+    private List<Plant> plants = new ArrayList<>();
 
     public PlantCollection() {}
 
+    public PlantCollection(List<Plant> plants) {
+        this.plants.addAll(plants);
+    }
+
+    /**
+     * Collection contructor for creating and loading plant collections from file
+     * @param fileName File name or path to the file containing plant collection
+     */
     public PlantCollection(String fileName) {
         try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(fileName)))) {
             while (scanner.hasNextLine()) {
-                plants.add(Plant.serialize(scanner.nextLine()));
+                plants.add(Plant.deserialize(scanner.nextLine()));
             }
         } catch (FileNotFoundException | PlantException e) {
             if (DebugManager.isDebug()) {
@@ -31,7 +40,7 @@ public class PlantCollection {
     }
 
     public void addPlant(Plant plant) {
-        plants.add(plant);
+        this.plants.add(plant);
     }
 
     public void savePlantsToFile(String path) {
@@ -40,7 +49,7 @@ public class PlantCollection {
         }
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path)))) {
             for (Plant plant : this.plants) {
-                writer.println(plant.deserialize());
+                writer.println(plant.serialize());
             }
             DebugManager.print(ConsoleColor.BLUE + "Plants(" + plants.size() + ") saved to file " + path);
         } catch (IOException e) {
@@ -49,6 +58,9 @@ public class PlantCollection {
     }
 
     public Plant getPlant(int index) {
+        if (index < 0 || index >= plants.size()) {
+            throw new IndexOutOfBoundsException("Invalid plant index: " + index);
+        }
         return plants.get(index);
     }
 
@@ -63,11 +75,21 @@ public class PlantCollection {
     public List<Plant> getUnWateredPlants() {
         List<Plant> unWateredPlants = new ArrayList<>();
         for (Plant plant : plants) {
-            if (plant.getLastWateringDate().plus(plant.getWateringInterval()).isBefore(LocalDate.now())) {
+            if (plant.getLastWateringDate().plusDays(plant.getWateringInterval().toDays()).isBefore(LocalDate.now())) {
                 unWateredPlants.add(plant);
             }
         }
         return unWateredPlants;
+    }
+    //More flexible version of getUnWateredPlants method
+    public List<Plant> getPlantsByCondition(Predicate<Plant> condition) {
+        List<Plant> result = new ArrayList<>();
+        for (Plant plant : this.plants) {
+            if (condition.test(plant)) {
+                result.add(plant);
+            }
+        }
+        return result;
     }
 
     public void sortPlantsByWateringInterval() {

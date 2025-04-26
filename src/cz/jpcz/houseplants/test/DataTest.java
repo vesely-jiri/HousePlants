@@ -6,50 +6,113 @@ import cz.jpcz.houseplants.model.PlantCollection;
 import cz.jpcz.houseplants.util.DebugManager;
 import cz.jpcz.houseplants.util.ConsoleColor;
 
+import java.io.File;
 import java.time.Duration;
 import java.time.LocalDate;
 
-public class DataTest {
+public final class DataTest {
+
+    private DataTest() {}
+
+    private static final boolean fileCleanup = true;
+
     public static void run() {
         DebugManager.setDebug(true);
-        DebugManager.print(ConsoleColor.GREEN + "Running DataTest");
+        DebugManager.print(ConsoleColor.PURPLE + "Running DataTest");
 
-        DebugManager.print(ConsoleColor.YELLOW + "Creating 3 plants");
+        testPlantCreation();
+        testInvalidWateringInterval();
+        testSavingAndLoading();
+        testErrorLoadingWrongFileFormat();
+        testGetUnWateredPlants();
+
+        if (fileCleanup) {
+            cleanupGeneratedFiles();
+        }
+
+        DebugManager.print(ConsoleColor.PURPLE + "DataTest finished");
+    }
+
+    private static void testPlantCreation() {
+        DebugManager.printHeader("Testing creation of 3 plants with different parameters");
         try {
             Plant plant1 = new Plant("Kopretina1", Duration.ofDays(5),
-                    "Notes for Kopretina",
-                    LocalDate.now(), LocalDate.now());
+                    "Notes for Kopretina", LocalDate.now(), LocalDate.now());
             Plant plant2 = new Plant("Kopretina2", Duration.ofDays(3));
             Plant plant3 = new Plant("Kopretina3");
+            DebugManager.print(ConsoleColor.GREEN + "Plants created successfully.");
         } catch (PlantException e) {
-            DebugManager.printError("Exception thrown: " + e.getMessage());
+            DebugManager.printError("ERROR! Exception thrown during plant creation: " + e.getMessage());
         }
+    }
 
-        DebugManager.print(ConsoleColor.YELLOW + "Testing 0 or negative watering interval. Exception should be thrown:");
+    private static void testInvalidWateringInterval() {
+        DebugManager.printHeader("Testing invalid watering interval (should throw exception)");
         try {
-            Plant plant4 = new Plant("Kopretina4", Duration.ofDays(-1));
+            new Plant("Kopretina4", Duration.ofDays(-1));
+            DebugManager.printError("ERROR! Plant with negative watering interval was created!");
         } catch (PlantException e) {
-            DebugManager.printError("Exception thrown: " + e.getMessage());
-
+            DebugManager.print(ConsoleColor.GREEN + "Correctly caught exception: " + e.getMessage());
         }
+    }
 
-        DebugManager.print(ConsoleColor.YELLOW + "Testing loading data from file(A): test-plants.txt");
+    private static void testSavingAndLoading() {
+        DebugManager.printHeader("Testing saving and loading plants");
+
         PlantCollection plantCollection = new PlantCollection("test-plants.txt");
-        DebugManager.print(ConsoleColor.YELLOW + "Printing loaded plants of file (A):");
-        plantCollection.getPlants().forEach(p -> DebugManager.print(ConsoleColor.BLUE + p.toString()));
+        try {
+            Plant plant1 = new Plant("TestPlant", Duration.ofDays(2));
+            plantCollection.addPlant(plant1);
 
-        DebugManager.print(ConsoleColor.YELLOW + "Testing saving data to file(B): test-plants2.txt");
-        plantCollection.savePlantsToFile("test-plants2.txt");
+            plantCollection.savePlantsToFile("test-plants2.txt");
+            DebugManager.print(ConsoleColor.BLUE + "Plants saved successfully to test-plants2.txt");
 
-        DebugManager.print(ConsoleColor.YELLOW + "Testing loading data in wrong format from file(B): kvetiny-spatne-datum.txt");
-        PlantCollection plantCollection2 = new PlantCollection("kvetiny-spatne-datum.txt");
+            PlantCollection loadedCollection = new PlantCollection("test-plants2.txt");
 
-        DebugManager.printError(ConsoleColor.YELLOW + "Testing loading data in wrong format from file(B): kvetiny-spatne-frekvence.txt");
-        PlantCollection plantCollection3 = new PlantCollection("kvetiny-spatne-frekvence.txt");
+            loadedCollection.getPlants().forEach(p ->
+                    DebugManager.print(ConsoleColor.BLUE + p.toString()));
 
-        //TODO: Test Collection methods and other
+            DebugManager.print(ConsoleColor.GREEN + "Plants loaded successfully from test-plants2.txt");
 
+        } catch (PlantException e) {
+            DebugManager.printError("ERROR! Exception during saving/loading: " + e.getMessage());
+        }
+    }
 
-        DebugManager.print(ConsoleColor.GREEN + "DataTest finished");
+    private static void testErrorLoadingWrongFileFormat() {
+        DebugManager.printHeader("Testing loading plants from wrong format files");
+
+        PlantCollection collection1 = new PlantCollection("kvetiny-spatne-datum.txt");
+        PlantCollection collection2 = new PlantCollection("kvetiny-spatne-frekvence.txt");
+
+        DebugManager.print(ConsoleColor.GREEN + "Finished testing wrong format files (2 errors should have been printed above).");
+    }
+
+    private static void testGetUnWateredPlants() {
+        DebugManager.printHeader("Testing getUnWateredPlants method");
+
+        PlantCollection plantCollection = new PlantCollection("test-plants.txt");
+
+        plantCollection.getUnWateredPlants().forEach(plant ->
+                DebugManager.print(ConsoleColor.GREEN + plant.getWateringInfo()));
+    }
+
+    private static void cleanupGeneratedFiles() {
+        DebugManager.printHeader("Cleaning up generated test files");
+
+        deleteFileIfExists("test-plants2.txt");
+    }
+
+    private static void deleteFileIfExists(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            if (file.delete()) {
+                DebugManager.print(ConsoleColor.BLUE + "File " + fileName + " deleted.");
+            } else {
+                DebugManager.printError("Failed to delete file " + fileName);
+            }
+        } else {
+            DebugManager.print(ConsoleColor.RED + "File " + fileName + " does not exist.");
+        }
     }
 }
