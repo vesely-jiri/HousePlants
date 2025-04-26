@@ -68,6 +68,10 @@ public class PlantCollection {
         plants.remove(plant);
     }
 
+    public void removePlant(int index) {
+        plants.remove(index);
+    }
+
     public List<Plant> getPlants() {
         return new ArrayList<>(plants);
     }

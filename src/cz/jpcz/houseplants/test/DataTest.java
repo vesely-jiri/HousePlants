@@ -12,6 +12,15 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
+    /**
+     * <pre>
+     * BLUE   - program output
+     * RED    - error output
+     * YELLOW - new test section
+     * PURPLE - assignment tasks
+     * GREEN  - correct output
+     * <pre>
+     */
 public final class DataTest {
 
     private DataTest() {}
@@ -24,6 +33,9 @@ public final class DataTest {
     public static void run() {
         DebugManager.setDebug(true);
         DebugManager.print(ConsoleColor.PURPLE + "Running DataTest");
+
+        testAssignment();
+
 
         testPlantCreation();
         testInvalidWateringInterval();
@@ -121,6 +133,60 @@ public final class DataTest {
                 DebugManager.print(ConsoleColor.GREEN + plant.getName()));
     }
 
+    /**
+     * Tests all assignment tasks
+     */
+    public static void testAssignment() {
+        DebugManager.printHeader(ConsoleColor.YELLOW + "Testing assignment");
+
+        DebugManager.print(ConsoleColor.PURPLE + "Loading plants from file kvetiny.txt");
+        PlantCollection plantCollection = new PlantCollection("kvetiny.txt");
+
+        DebugManager.print(ConsoleColor.PURPLE + "Printing watering information about all plants");
+        plantCollection.getPlants().forEach(plant ->
+                DebugManager.print(ConsoleColor.GREEN + plant.getWateringInfo()));
+
+        DebugManager.print(ConsoleColor.PURPLE + "Adding new plant to collection");
+        try {
+            Plant plant = new Plant("Růže pro Růžu", Duration.ofDays(2),"", LocalDate.now(), LocalDate.now());
+            plantCollection.addPlant(plant);
+        } catch (PlantException e) {
+            DebugManager.printError("ERROR! Exception thrown during plant creation: " + e.getMessage());
+        }
+
+        DebugManager.print(ConsoleColor.PURPLE + "Adding " + 10 + " plants to collection");
+        for (int i = 0; i < 10; i++) {
+            try {
+                Plant plant = new Plant("Tulipán na prodej " + (i + 1), Duration.ofDays(14),"", LocalDate.now(), LocalDate.now());
+                plantCollection.addPlant(plant);
+            } catch (PlantException e) {
+                DebugManager.printError("ERROR! Exception thrown during plant creation: " + e.getMessage());
+            }
+        }
+
+        DebugManager.print(ConsoleColor.PURPLE + "Removing 3rd plant from collection. Collection size: " + plantCollection.getPlants().size());
+        plantCollection.removePlant(3);
+        DebugManager.print(ConsoleColor.GREEN + "Removed 3rd plant from collection. Collection size: " + plantCollection.getPlants().size());
+
+        DebugManager.print(ConsoleColor.PURPLE + "Saving plants to new file new-plants.txt");
+        plantCollection.savePlantsToFile("new-plants.txt");
+
+        DebugManager.print(ConsoleColor.PURPLE + "Loading plants from new file new-plants.txt");
+        PlantCollection newCollection = new PlantCollection("new-plants.txt");
+        newCollection.getPlants().forEach(plant ->
+                DebugManager.print(ConsoleColor.GREEN + plant.toString()));
+
+        DebugManager.print(ConsoleColor.PURPLE + "Sorting plants by name");
+        Collections.sort(newCollection.getPlants());
+        newCollection.getPlants().forEach(plant ->
+                DebugManager.print(ConsoleColor.GREEN + plant.toString()));
+
+        DebugManager.print(ConsoleColor.PURPLE + "Sorting plants by last watering date");
+        newCollection.sortPlantsByLastWateringDate();
+        newCollection.getPlants().forEach(plant ->
+                DebugManager.print(ConsoleColor.GREEN + plant.toString()));
+    }
+
 
     public static void testSortPlantsByLastWateringDate() {
         DebugManager.printHeader("Testing sortPlantsByLastWateringDate method");
@@ -141,6 +207,7 @@ public final class DataTest {
     private static void cleanupGeneratedFiles() {
         DebugManager.printHeader("Cleaning up generated test files");
 
+        deleteFileIfExists("new-plants.txt");
         deleteFileIfExists("test-plants2.txt");
     }
 

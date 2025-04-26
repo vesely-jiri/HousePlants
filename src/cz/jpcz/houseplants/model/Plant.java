@@ -102,7 +102,8 @@ public class Plant implements Comparable<Plant> {
             return "The plant was last watered on " + lastWateringDate + "(" + daysSinceLastWatering + " days ago)" + ". Watering interval should be " +
                     wateringInterval.toDays() + " days. Consider watering now";
         }
-        return "The plant was last watered on " + lastWateringDate + ".";
+        return "The plant was last watered on " + lastWateringDate + ".(" + daysSinceLastWatering + " days ago)" +
+                ". Watering interval should be " + wateringInterval.toDays() + " days.";
     }
 
     public static Plant deserialize(String string) throws PlantException {
