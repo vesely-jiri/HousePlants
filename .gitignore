@@ -33,3 +33,4 @@ bin/
 .idea/*
 !.idea/modules.xml
 !.idea/runConfigurations/
+test-plants2.txt

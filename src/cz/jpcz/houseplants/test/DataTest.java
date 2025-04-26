@@ -47,6 +47,9 @@ public class DataTest {
         DebugManager.printError(ConsoleColor.YELLOW + "Testing loading data in wrong format from file(B): kvetiny-spatne-frekvence.txt");
         PlantCollection plantCollection3 = new PlantCollection("kvetiny-spatne-frekvence.txt");
 
+        //TODO: Test Collection methods and other
+
+
         DebugManager.print(ConsoleColor.GREEN + "DataTest finished");
     }
 }
