@@ -1,4 +1,4 @@
-package main.cz.jpcz.houseplants.util;
+package cz.jpcz.houseplants.util;
 
 public enum ConsoleColor {
     RESET("\u001B[0m"),

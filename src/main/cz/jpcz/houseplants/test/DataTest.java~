@@ -188,9 +188,8 @@ public final class DataTest {
                 DebugManager.print(ConsoleColor.GREEN + plant.toString()));
 
         DebugManager.print(ConsoleColor.PURPLE + "Sorting plants by name");
-        List<Plant> plants = plantService1.getPlants();
-        Collections.sort(plants);
-        plants.forEach(plant ->
+        Collections.sort(plantService1.getPlants());
+        plantService1.getPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.toString()));
 
         DebugManager.print(ConsoleColor.PURPLE + "Sorting plants by last watering date");

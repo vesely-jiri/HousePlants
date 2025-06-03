@@ -1,6 +1,6 @@
-package main.cz.jpcz.houseplants;
+package cz.jpcz.houseplants;
 
-import main.cz.jpcz.houseplants.test.DataTest;
+import cz.jpcz.houseplants.test.DataTest;
 
 public class Main {
     public static void main(String[] args) {

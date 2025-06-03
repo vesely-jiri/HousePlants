@@ -1,11 +1,11 @@
-package main.cz.jpcz.houseplants.service;
+package cz.jpcz.houseplants.service;
 
-import main.cz.jpcz.houseplants.exceptions.PlantException;
-import main.cz.jpcz.houseplants.model.Plant;
-import main.cz.jpcz.houseplants.model.PlantCollection;
-import main.cz.jpcz.houseplants.util.ConsoleColor;
-import main.cz.jpcz.houseplants.util.DebugManager;
-import main.cz.jpcz.houseplants.util.parser.PlantParser;
+import cz.jpcz.houseplants.exceptions.PlantException;
+import cz.jpcz.houseplants.model.Plant;
+import cz.jpcz.houseplants.model.PlantCollection;
+import cz.jpcz.houseplants.util.ConsoleColor;
+import cz.jpcz.houseplants.util.DebugManager;
+import cz.jpcz.houseplants.util.parser.PlantParser;
 
 import java.io.*;
 import java.util.ArrayList;

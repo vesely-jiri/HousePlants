@@ -1,4 +1,4 @@
-package main.cz.jpcz.houseplants.exceptions;
+package cz.jpcz.houseplants.exceptions;
 
 public class PlantException extends Exception {
     public PlantException(String message) {
