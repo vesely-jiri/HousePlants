@@ -85,7 +85,7 @@ public class PlantService {
     public List<Plant> getUnWateredPlants() {
         List<Plant> unWateredPlants = new ArrayList<>();
         for (Plant plant : plantCollection.getPlants()) {
-            if (!plant.getLastWateringDate().plusDays(plant.getWateringInterval().toDays()).isBefore(LocalDate.now())) {
+            if (plant.isWateringNeeded()) {
                 unWateredPlants.add(plant);
             }
         }

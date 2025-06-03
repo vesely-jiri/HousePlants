@@ -62,6 +62,9 @@ public class Plant implements Comparable<Plant> {
         }
         return message;
     }
+    public boolean isWateringNeeded() {
+        return LocalDate.now().toEpochDay() - lastWateringDate.toEpochDay() >= wateringInterval.toDays();
+    }
 
     public String getName() {
         return name;
