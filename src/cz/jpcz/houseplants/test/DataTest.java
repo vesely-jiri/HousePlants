@@ -13,15 +13,15 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-    /**
-     * <pre>
-     * BLUE   - program output
-     * RED    - error output
-     * YELLOW - new test section
-     * PURPLE - assignment tasks
-     * GREEN  - correct output
-     * <pre>
-     */
+/**
+ * <pre>
+ * BLUE   - program output
+ * RED    - error output
+ * YELLOW - new test section
+ * PURPLE - assignment tasks
+ * GREEN  - correct output
+ * <pre>
+ */
 public final class DataTest {
 
     private DataTest() {}
