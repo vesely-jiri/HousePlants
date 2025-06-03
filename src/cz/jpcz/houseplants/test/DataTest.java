@@ -3,6 +3,7 @@ package cz.jpcz.houseplants.test;
 import cz.jpcz.houseplants.exceptions.PlantException;
 import cz.jpcz.houseplants.model.Plant;
 import cz.jpcz.houseplants.model.PlantCollection;
+import cz.jpcz.houseplants.service.PlantService;
 import cz.jpcz.houseplants.util.DebugManager;
 import cz.jpcz.houseplants.util.ConsoleColor;
 
@@ -26,7 +27,7 @@ public final class DataTest {
     private DataTest() {}
 
     /**
-     * If true, generated test files will be deleted at the end of the testg
+     * If true, generated test files will be deleted at the end of the test
      */
     private static final boolean fileCleanup = true;
 
@@ -77,19 +78,19 @@ public final class DataTest {
     private static void testSavingAndLoading() {
         DebugManager.printHeader("Testing saving and loading plants");
 
-        PlantCollection plantCollection = new PlantCollection("resources/kvetiny.txt");
+        PlantService plantService = new PlantService(new PlantCollection());
+        plantService.loadFromFile("resources/kvetiny.txt");
         try {
             Plant plant1 = new Plant("TestPlant", Duration.ofDays(2));
-            plantCollection.addPlant(plant1);
+            plantService.addPlant(plant1);
 
-            plantCollection.saveCollectionToFile("resources/test-plants2.txt");
+            plantService.saveToFile("resources/test-plants2.txt");
             DebugManager.print(ConsoleColor.BLUE + "Plants saved successfully to test-plants2.txt");
 
-            PlantCollection loadedCollection = new PlantCollection("resources/test-plants2.txt");
-
-            loadedCollection.getPlants().forEach(p ->
+            PlantService plantService1 = new PlantService(new PlantCollection());
+            plantService1.loadFromFile("resources/test-plants2.txt");
+            plantService1.getPlants().forEach(p ->
                     DebugManager.print(ConsoleColor.BLUE + p.toString()));
-
             DebugManager.print(ConsoleColor.GREEN + "Plants loaded successfully from test-plants2.txt");
 
         } catch (PlantException e) {
@@ -100,8 +101,11 @@ public final class DataTest {
     private static void testErrorLoadingWrongFileFormat() {
         DebugManager.printHeader("Testing loading plants from wrong format files");
 
-        PlantCollection collection1 = new PlantCollection("resources/kvetiny-spatne-datum.txt");
-        PlantCollection collection2 = new PlantCollection("resources/kvetiny-spatne-frekvence.txt");
+        PlantService plantService = new PlantService(new PlantCollection());
+        plantService.loadFromFile("resources/kvetiny-spatne-datum.txt");
+
+        PlantService plantService1 = new PlantService(new PlantCollection());
+        plantService1.loadFromFile("resources/kvetiny-spatne-frekvence.txt");
 
         DebugManager.print(ConsoleColor.GREEN + "Finished testing wrong format files (2 errors should have been printed above).");
     }
@@ -109,25 +113,27 @@ public final class DataTest {
     private static void testGetUnWateredPlants() {
         DebugManager.printHeader("Testing getUnWateredPlants method");
 
-        PlantCollection plantCollection = new PlantCollection("resources/kvetiny.txt");
+        PlantService plantService = new PlantService(new PlantCollection());
+        plantService.loadFromFile("resources/kvetiny.txt");
 
-        plantCollection.getUnWateredPlants().forEach(plant ->
+        plantService.getUnWateredPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.getWateringInfo()));
     }
 
     public static void testSortPlantsByName() {
         DebugManager.printHeader("Testing sortPlantsByName method");
 
-        PlantCollection plantCollection = new PlantCollection("resources/kvetiny.txt");
+        PlantService plantService = new PlantService(new PlantCollection());
+        plantService.loadFromFile("resources/kvetiny.txt");
 
         DebugManager.print(ConsoleColor.BLUE + "Plants before sorting:");
-        plantCollection.getPlants().forEach(plant ->
+        plantService.getPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.getName()));
 
-        List<Plant> plants = plantCollection.getPlants();
+        List<Plant> plants = plantService.getPlants();
         Collections.sort(plants);
 
-        DebugManager.print(ConsoleColor.BLUE + "Plants after sorting:");
+        DebugManager.print(ConsoleColor.BLUE + "Plants after default sorting(by name):");
         plants.forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.getName()));
     }
@@ -139,16 +145,17 @@ public final class DataTest {
         DebugManager.printHeader(ConsoleColor.YELLOW + "Testing assignment");
 
         DebugManager.print(ConsoleColor.PURPLE + "Loading plants from file kvetiny.txt");
-        PlantCollection plantCollection = new PlantCollection("resources/kvetiny.txt");
+        PlantService plantService = new PlantService(new PlantCollection());
+        plantService.loadFromFile("resources/kvetiny.txt");
 
         DebugManager.print(ConsoleColor.PURPLE + "Printing watering information about all plants");
-        plantCollection.getPlants().forEach(plant ->
+        plantService.getPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.getWateringInfo()));
 
         DebugManager.print(ConsoleColor.PURPLE + "Adding new plant to collection");
         try {
             Plant plant = new Plant("Růže pro Růžu", Duration.ofDays(2),"", LocalDate.now(), LocalDate.now());
-            plantCollection.addPlant(plant);
+            plantService.addPlant(plant);
         } catch (PlantException e) {
             DebugManager.printError("ERROR! Exception thrown during plant creation: " + e.getMessage());
         }
@@ -157,36 +164,38 @@ public final class DataTest {
         for (int i = 0; i < 10; i++) {
             try {
                 Plant plant = new Plant("Tulipán na prodej " + (i + 1), Duration.ofDays(14),"", LocalDate.now(), LocalDate.now());
-                plantCollection.addPlant(plant);
+                plantService.addPlant(plant);
             } catch (PlantException e) {
                 DebugManager.printError("ERROR! Exception thrown during plant creation: " + e.getMessage());
             }
         }
 
-        DebugManager.print(ConsoleColor.PURPLE + "Removing 3rd plant from collection. Collection size: " + plantCollection.getPlants().size());
+        DebugManager.print(ConsoleColor.PURPLE + "Removing 3rd plant from collection. Collection size: " + plantService.getPlants().size());
         try {
-            plantCollection.removePlant(2);
-        } catch (IndexOutOfBoundsException e) {
+            plantService.removePlant(2);
+        } catch (PlantException e) {
             DebugManager.printError("ERROR! Exception thrown during plant removal: " + e.getMessage());
         }
-        DebugManager.print(ConsoleColor.GREEN + "Removed 3rd plant from collection. Collection size: " + plantCollection.getPlants().size());
+        DebugManager.print(ConsoleColor.GREEN + "Removed 3rd plant from collection. Collection size: " + plantService.getPlants().size());
 
         DebugManager.print(ConsoleColor.PURPLE + "Saving plants to new file new-plants.txt");
-        plantCollection.saveCollectionToFile("resources/new-plants.txt");
+        plantService.saveToFile("resources/new-plants.txt");
 
         DebugManager.print(ConsoleColor.PURPLE + "Loading plants from new file new-plants.txt");
-        PlantCollection newCollection = new PlantCollection("resources/new-plants.txt");
-        newCollection.getPlants().forEach(plant ->
+        PlantCollection plantCollection = new PlantCollection();
+        PlantService plantService1 = new PlantService(plantCollection);
+        plantService1.loadFromFile("resources/new-plants.txt");
+        plantService1.getPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.toString()));
 
         DebugManager.print(ConsoleColor.PURPLE + "Sorting plants by name");
-        Collections.sort(newCollection.getPlants());
-        newCollection.getPlants().forEach(plant ->
+        Collections.sort(plantService1.getPlants());
+        plantService1.getPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.toString()));
 
         DebugManager.print(ConsoleColor.PURPLE + "Sorting plants by last watering date");
-        newCollection.sortPlantsByLastWateringDate();
-        newCollection.getPlants().forEach(plant ->
+        plantCollection.sortPlantsByLastWateringDate();
+        plantService1.getPlants().forEach(plant ->
                 DebugManager.print(ConsoleColor.GREEN + plant.toString()));
     }
 
@@ -194,15 +203,17 @@ public final class DataTest {
     public static void testSortPlantsByLastWateringDate() {
         DebugManager.printHeader("Testing sortPlantsByLastWateringDate method");
 
-        PlantCollection plantCollection = new PlantCollection("resources/kvetiny.txt");
+        PlantCollection plantCollection = new PlantCollection();
+        PlantService plantService = new PlantService(plantCollection);
+        plantService.loadFromFile("resources/kvetiny.txt");
 
-        plantCollection.getPlants().forEach(plant ->
+        plantService.getPlants().forEach(plant ->
                 DebugManager.print("[BEFORE SORT] " + ConsoleColor.GREEN +
                         plant.getLastWateringDate() + " - " + plant));
 
         plantCollection.sortPlantsByLastWateringDate();
 
-        plantCollection.getPlants().forEach(plant ->
+        plantService.getPlants().forEach(plant ->
                 DebugManager.print("[AFTER SORT] " + ConsoleColor.GREEN +
                         plant.getLastWateringDate() + " - " + plant));
     }

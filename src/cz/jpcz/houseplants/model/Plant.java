@@ -7,12 +7,8 @@ import cz.jpcz.houseplants.util.DebugManager;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class Plant implements Comparable<Plant> {
-
-    private static final String DELIMITER = "\t";
-
     private String name;
     private Duration wateringInterval;
     private String notes;
@@ -42,8 +38,8 @@ public class Plant implements Comparable<Plant> {
         this.plantedDate = plantedDate;
         this.lastWateringDate = lastWateringDate;
     }
-
     public Plant(String name, Duration wateringInterval) throws PlantException {
+        //TODO refactor
         //Because of rule: this() must be first statement in constructor, object creation can't be delegated to main constructor
         if (wateringInterval.isNegative() || wateringInterval.isZero()) {
             throw new PlantException("Watering interval cannot be negative or zero.");
@@ -56,13 +52,24 @@ public class Plant implements Comparable<Plant> {
         DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
                 wateringInterval.toDays() + ", " + notes + ", " + LocalDate.now() + ", " + LocalDate.now());
     }
-
     public Plant(String name) throws PlantException {
         this(name, Duration.ofDays(7));
     }
 
     public void doWateringNow() {
         this.lastWateringDate = LocalDate.now();
+    }
+    public LocalDate getNextWateringDate() {
+        return lastWateringDate.plusDays(wateringInterval.toDays());
+    }
+    public String getWateringInfo() {
+        long daysSinceLastWatering = LocalDate.now().toEpochDay() - lastWateringDate.toEpochDay();
+        String message = "The plant was last watered on " + lastWateringDate + "(" + daysSinceLastWatering + " days ago)"
+                + ". Watering interval should be " + wateringInterval.toDays() + " days.";
+        if (daysSinceLastWatering >= wateringInterval.toDays()) {
+            message += " Consider watering now!";
+        }
+        return message;
     }
 
     public String getName() {
@@ -95,42 +102,6 @@ public class Plant implements Comparable<Plant> {
     public void setLastWateringDate(LocalDate lastWateringDate) {
         this.lastWateringDate = lastWateringDate;
     }
-
-    public String getWateringInfo() {
-        long daysSinceLastWatering = LocalDate.now().toEpochDay() - (lastWateringDate.toEpochDay());
-        if (lastWateringDate.plusDays(wateringInterval.toDays()).isBefore(LocalDate.now())) {
-            return "The plant was last watered on " + lastWateringDate + "(" + daysSinceLastWatering + " days ago)" + ". Watering interval should be " +
-                    wateringInterval.toDays() + " days. Consider watering now";
-        }
-        return "The plant was last watered on " + lastWateringDate + ".(" + daysSinceLastWatering + " days ago)" +
-                ". Watering interval should be " + wateringInterval.toDays() + " days.";
-    }
-
-    public static Plant deserialize(String string) throws PlantException {
-        String[] args = string.split(DELIMITER);
-        if (args.length != 5) {
-            throw new PlantException("Illegal number of arguments for Plant constructor(" + args.length + "): " + string);
-        }
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            Duration wateringInterval = Duration.ofDays(Integer.parseInt(args[2]));
-            LocalDate plantedDate = LocalDate.parse(args[4], formatter);
-            LocalDate lastWateringDate = LocalDate.parse(args[3], formatter);
-            return new Plant(args[0], wateringInterval, args[1], plantedDate, lastWateringDate);
-        } catch (NumberFormatException e) {
-            throw new PlantException("Failed to parse watering interval: " + string);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new PlantException("Illegal number of arguments for Plant constructor(" + args.length + "): " + string);
-        } catch (DateTimeParseException e) {
-            throw new PlantException("Failed to parse date: " + string + e);
-        } catch (PlantException e) {
-            throw new PlantException("Failed to create Plant: " + string + e);
-        }
-    }
-
-public String serialize() {
-    return name + DELIMITER + notes + DELIMITER + wateringInterval.toDays() + DELIMITER + lastWateringDate + DELIMITER + plantedDate;
-}
 
     @Override
     public String toString() {
