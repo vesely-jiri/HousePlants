@@ -142,7 +142,7 @@ public final class DataTest {
      * Tests all assignment tasks
      */
     public static void testAssignment() {
-        DebugManager.printHeader(ConsoleColor.YELLOW + "Testing assignment");
+        DebugManager.printHeader("Testing assignment");
 
         DebugManager.print(ConsoleColor.PURPLE + "Loading plants from file kvetiny.txt");
         PlantService plantService = new PlantService(new PlantCollection());
