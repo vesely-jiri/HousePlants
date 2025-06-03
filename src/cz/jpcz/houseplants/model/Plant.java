@@ -56,7 +56,7 @@ public class Plant implements Comparable<Plant> {
     public String getWateringInfo() {
         long daysSinceLastWatering = LocalDate.now().toEpochDay() - lastWateringDate.toEpochDay();
         String message = "The plant was last watered on " + lastWateringDate + "(" + daysSinceLastWatering + " days ago)"
-                + ". Watering interval should be " + wateringInterval.toDays() + " days.";
+                + ". Watering interval is " + wateringInterval.toDays() + " days.";
         if (daysSinceLastWatering >= wateringInterval.toDays()) {
             message += " Consider watering now!";
         }
