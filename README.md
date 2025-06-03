@@ -16,6 +16,9 @@ Simple debugging and test framework using custom DataTest
 Java 21
 
 ## Developer Notes
-
 Console output is colorized using ConsoleColor
-Test data is stored in simple .txt files
+
+Test data are stored in simple .txt files
+
+Custom DataTest was created before I learned about JUnit and SLF4J. I decided to keep it to present 
+my critical thinking and problem-solving.
