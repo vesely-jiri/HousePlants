@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Core test for project HousePlants
  * <pre>
  * BLUE   - program output
  * RED    - error output

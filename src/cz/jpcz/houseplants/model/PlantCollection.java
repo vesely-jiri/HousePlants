@@ -5,6 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * Class representing collection of Plants
+ */
 public class PlantCollection {
 
     List<Plant> plants = new ArrayList<>();

@@ -12,6 +12,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service class for managing plants
+ */
 public class PlantService {
 
     private final PlantCollection plantCollection;

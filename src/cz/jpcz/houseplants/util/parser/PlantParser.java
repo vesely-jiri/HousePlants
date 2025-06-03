@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Class for parsing string to Plant and vice versa
+ */
 public class PlantParser {
 
     private static final String DELIMITER = "\t";
