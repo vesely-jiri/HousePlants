@@ -207,13 +207,13 @@ public final class DataTest {
 
         plantService.getPlants().forEach(plant ->
                 DebugManager.print("[BEFORE SORT] " + ConsoleColor.GREEN +
-                        plant.getLastWateringDate() + " - " + plant));
+                        plant.getLastWateringDate() + " - " + ConsoleColor.BLUE + plant));
 
         plantCollection.sortPlantsByLastWateringDate();
 
         plantService.getPlants().forEach(plant ->
                 DebugManager.print("[AFTER SORT] " + ConsoleColor.GREEN +
-                        plant.getLastWateringDate() + " - " + plant));
+                        plant.getLastWateringDate() + " - " + ConsoleColor.BLUE  + plant));
     }
 
     private static void cleanupGeneratedFiles() {
