@@ -1,4 +1,4 @@
-package cz.jpcz.houseplants.util;
+package main.cz.jpcz.houseplants.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

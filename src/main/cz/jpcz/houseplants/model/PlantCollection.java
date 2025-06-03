@@ -1,4 +1,4 @@
-package cz.jpcz.houseplants.model;
+package main.cz.jpcz.houseplants.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;

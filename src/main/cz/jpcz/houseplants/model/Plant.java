@@ -1,8 +1,8 @@
-package cz.jpcz.houseplants.model;
+package main.cz.jpcz.houseplants.model;
 
-import cz.jpcz.houseplants.exceptions.PlantException;
-import cz.jpcz.houseplants.util.ConsoleColor;
-import cz.jpcz.houseplants.util.DebugManager;
+import main.cz.jpcz.houseplants.exceptions.PlantException;
+import main.cz.jpcz.houseplants.util.ConsoleColor;
+import main.cz.jpcz.houseplants.util.DebugManager;
 
 import java.time.Duration;
 import java.time.LocalDate;

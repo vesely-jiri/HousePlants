@@ -1,7 +1,7 @@
-package cz.jpcz.houseplants.util.parser;
+package main.cz.jpcz.houseplants.util.parser;
 
-import cz.jpcz.houseplants.exceptions.PlantException;
-import cz.jpcz.houseplants.model.Plant;
+import main.cz.jpcz.houseplants.exceptions.PlantException;
+import main.cz.jpcz.houseplants.model.Plant;
 
 import java.time.Duration;
 import java.time.LocalDate;
