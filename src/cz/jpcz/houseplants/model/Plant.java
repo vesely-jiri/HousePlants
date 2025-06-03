@@ -39,16 +39,7 @@ public class Plant implements Comparable<Plant> {
         this.lastWateringDate = lastWateringDate;
     }
     public Plant(String name, Duration wateringInterval) throws PlantException {
-        //TODO refactor
-        //Because of rule: this() must be first statement in constructor, object creation can't be delegated to main constructor
-        if (wateringInterval.isNegative() || wateringInterval.isZero()) {
-            throw new PlantException("Watering interval cannot be negative or zero.");
-        }
-        this.name = name;
-        this.wateringInterval = wateringInterval;
-        this.notes = "";
-        this.plantedDate = LocalDate.now();
-        this.lastWateringDate = LocalDate.now();
+        this(name, wateringInterval, "", LocalDate.now(), LocalDate.now());
         DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
                 wateringInterval.toDays() + ", " + notes + ", " + LocalDate.now() + ", " + LocalDate.now());
     }

@@ -19,12 +19,14 @@ public class PlantService {
     public PlantService(PlantCollection plantCollection) {
         this.plantCollection = plantCollection;
     }
+    public PlantService() {
+        this(new PlantCollection());
+    }
 
     public PlantCollection loadFromFile(String path) {
         return loadFromFile(new File(path));
     }
     public PlantCollection loadFromFile(File file) {
-        PlantCollection plantCollection = new PlantCollection();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -80,7 +82,7 @@ public class PlantService {
     public List<Plant> getUnWateredPlants() {
         List<Plant> unWateredPlants = new ArrayList<>();
         for (Plant plant : plantCollection.getPlants()) {
-            if (plant.getLastWateringDate().plusDays(plant.getWateringInterval().toDays()).isBefore(LocalDate.now())) {
+            if (!plant.getLastWateringDate().plusDays(plant.getWateringInterval().toDays()).isBefore(LocalDate.now())) {
                 unWateredPlants.add(plant);
             }
         }
