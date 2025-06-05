@@ -24,24 +24,16 @@ public class Plant implements Comparable<Plant> {
      * @param lastWateringDate Plant's last watering date
      */
     public Plant(String name, Duration wateringInterval, String notes, LocalDate plantedDate, LocalDate lastWateringDate) throws PlantException {
-        if (wateringInterval.isNegative() || wateringInterval.isZero()) {
-            throw new PlantException("Watering interval cannot be negative or zero.");
-        }
-        if (plantedDate.isAfter(lastWateringDate)) {
-            throw new PlantException("Planted date cannot be after last watering date.");
-        }
+        this.name = name;
+        this.notes = notes;
+        this.lastWateringDate = lastWateringDate;
+        setWateringInterval(wateringInterval);
+        setPlantedDate(plantedDate);
         DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
                 wateringInterval.toDays() + ", " + notes + ", " + plantedDate + ", " + lastWateringDate);
-        this.name = name;
-        this.wateringInterval = wateringInterval;
-        this.notes = notes;
-        this.plantedDate = plantedDate;
-        this.lastWateringDate = lastWateringDate;
     }
     public Plant(String name, Duration wateringInterval) throws PlantException {
         this(name, wateringInterval, "", LocalDate.now(), LocalDate.now());
-        DebugManager.print(ConsoleColor.BLUE + "Creating plant with parameters: " + name + ", " +
-                wateringInterval.toDays() + ", " + notes + ", " + LocalDate.now() + ", " + LocalDate.now());
     }
     public Plant(String name) throws PlantException {
         this(name, Duration.ofDays(7));
@@ -63,7 +55,7 @@ public class Plant implements Comparable<Plant> {
         return message;
     }
     public boolean isWateringNeeded() {
-        return LocalDate.now().toEpochDay() - lastWateringDate.toEpochDay() >= wateringInterval.toDays();
+        return getNextWateringDate().isBefore(LocalDate.now());
     }
 
     public String getName() {
@@ -75,7 +67,10 @@ public class Plant implements Comparable<Plant> {
     public Duration getWateringInterval() {
         return wateringInterval;
     }
-    public void setWateringInterval(Duration wateringInterval) {
+    public void setWateringInterval(Duration wateringInterval) throws PlantException {
+        if (wateringInterval.isNegative() || wateringInterval.isZero()) {
+            throw new PlantException("Watering interval cannot be negative or zero.");
+        }
         this.wateringInterval = wateringInterval;
     }
     public String getNotes() {
@@ -87,7 +82,10 @@ public class Plant implements Comparable<Plant> {
     public LocalDate getPlantedDate() {
         return plantedDate;
     }
-    public void setPlantedDate(LocalDate plantedDate) {
+    public void setPlantedDate(LocalDate plantedDate) throws PlantException {
+        if (plantedDate.isAfter(lastWateringDate)) {
+            throw new PlantException("Planted date cannot be after last watering date.");
+        }
         this.plantedDate = plantedDate;
     }
     public LocalDate getLastWateringDate() {
