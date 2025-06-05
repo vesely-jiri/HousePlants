@@ -21,7 +21,6 @@ public class PlantParser {
      * @return Constructed Plant
      * @throws PlantException if string can't be parsed
      */
-    //TODO .trim()
     public static Plant deserialize(String string) throws PlantException {
         String[] args = string.split(DELIMITER);
         if (args.length != 5) {
@@ -29,10 +28,10 @@ public class PlantParser {
         }
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            Duration wateringInterval = Duration.ofDays(Integer.parseInt(args[2]));
-            LocalDate plantedDate = LocalDate.parse(args[4], formatter);
-            LocalDate lastWateringDate = LocalDate.parse(args[3], formatter);
-            return new Plant(args[0], wateringInterval, args[1], plantedDate, lastWateringDate);
+            Duration wateringInterval = Duration.ofDays(Integer.parseInt(args[2].trim()));
+            LocalDate plantedDate = LocalDate.parse(args[4].trim(), formatter);
+            LocalDate lastWateringDate = LocalDate.parse(args[3].trim(), formatter);
+            return new Plant(args[0].trim(), wateringInterval, args[1].trim(), plantedDate, lastWateringDate);
         } catch (NumberFormatException e) {
             throw new PlantException("Failed to parse watering interval: " + string);
         } catch (ArrayIndexOutOfBoundsException e) {
